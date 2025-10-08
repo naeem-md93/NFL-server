@@ -1,18 +1,32 @@
-from rest_framework import viewsets
+import os
+import uuid
+import copy
+import json
+import requests
+from PIL import Image
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from django.conf import settings
+from django.core.files.storage import default_storage
 
-from .models import ItemModel, ItemListSerializer
-from . import serializers as S
+
+from closet_item.models import ItemModel, ItemListSerializer
+from .serializers import ItemDetailSerializer
 
 
-class ItemViewSet(viewsets.ModelViewSet):
-    queryset = ItemModel.objects.all()
-    lookup_field = 'id'
+AI_URL= os.getenv("AI_URL")
+SERVER_URL = os.getenv("SERVER_URL")
 
-    def get_serializer_class(self):
-        if self.action == 'list':
-            return ItemListSerializer
-        if self.action == 'retrieve':
-            return S.ItemDetailSerializer
-        if self.action in ['create', 'update', 'partial_update']:
-            return S.ItemWriteSerializer
-        return S.ItemDetailSerializer
+
+class ItemView(APIView):
+    def get(self, request):
+        _id = request.GET.dict().pop('id', None)
+        if _id is None:
+            sources = ItemModel.objects.all()
+            serializer = ItemListSerializer(sources, many=True, context={"request": request})
+        else:
+            sources = ItemModel.objects.get(id=_id)
+            serializer = ItemDetailSerializer(sources, context={"request": request})
+        print(serializer.data)
+        return Response(serializer.data)

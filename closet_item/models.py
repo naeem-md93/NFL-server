@@ -8,6 +8,7 @@ from closet_image.models import ImageModel
 
 class ItemModel(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    source = models.CharField(max_length=255, null=True, blank=True)
     type = models.CharField(max_length=255, null=True, blank=True)
     caption = models.CharField(max_length=255, blank=True)
     width = models.PositiveIntegerField(default=0, blank=True, null=True)
@@ -16,7 +17,8 @@ class ItemModel(models.Model):
     box_y = models.FloatField(blank=False, null=False, default=0)
     box_w = models.FloatField(blank=False, null=False, default=0)
     box_h = models.FloatField(blank=False, null=False, default=0)
-    url = models.ImageField(upload_to="closet/items/", null=True, blank=True)
+    path = models.ImageField(null=True, blank=True)
+    url = models.URLField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -30,10 +32,18 @@ class ItemModel(models.Model):
 
 
 class ItemListSerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField()
+    
     class Meta:
         model = ItemModel
         fields = (
-            "id", "type", "caption", "width", 'height',
+            "id", "source", "type", "caption", "width", 'height',
             "box_x", "box_y", "box_w", "box_h",
-            "url", "created_at", "updated_at"
+            "path", "url", "created_at", "updated_at"
         )
+        
+    def get_url(self, obj):
+        request = self.context.get("request")
+        if request is None:
+            return obj.url
+        return request.build_absolute_uri(obj.url)

@@ -21,12 +21,41 @@ AI_URL= os.getenv("AI_URL")
 SERVER_URL = os.getenv("SERVER_URL")
 
 
-def post__extract_items(file, width, height, mime_type):
+def post__process_items(path, image_obj, items):
+    img = Image.open(os.path.join(settings.MEDIA_ROOT, path)).convert("RGB")
+    width, height = img.width, img.height
+    
+    for it in items:
+        x, y, w, h = it["box_x"], it["box_y"], it["box_w"], it["box_h"]
+        x0 = int(x * width)
+        y0 = int(y * height)
+        x1 = int((x + w) * width) + 1
+        y1 = int((y + h) * height) + 1
+        
+        cropped_img = img.crop((x0, y0, x1, y1))
+        
+        _id = uuid.uuid4().hex
+        save_path = os.path.join(f"closet/items/{_id}.png")
+        
+        cropped_img.save(os.path.join(settings.MEDIA_ROOT, save_path), "png")
+        
+        it["image"] = image_obj
+        it["width"] = width
+        it["height"] = height
+        it["path"] = save_path
+        it['url'] = os.path.join("/media/", save_path)
+        it["source"] = "MyCloset"
+        it = ItemModel(**it)
+        it.save()
+
+
+def post__extract_items(path):
+    img_path = os.path.join(settings.MEDIA_ROOT, path)
+    img = open(img_path, "rb")
 
     resp = requests.post(
         f"{AI_URL}/api/ai/extract-items/",
-        files={"file": file},
-        data={"width": width, "height": height, "mime_type": mime_type},
+        files={"file": img},
     )
 
     return resp.json()
@@ -56,14 +85,10 @@ def post__process_one_file(file):
     })    
     image.save()
     
-    items = post__extract_items(file, width, height, mime_type)
-    for it in items:
-        it["image"] = image
-        it["width"] = width
-        it["height"] = height
-        it = ItemModel(**it)
-        it.save()
-
+    items = post__extract_items(saved_name)
+    
+    post__process_items(saved_name, image, items)
+    
     return image
 
 

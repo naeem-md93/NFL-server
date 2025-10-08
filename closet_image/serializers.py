@@ -1,6 +1,4 @@
 import os
-from urllib.parse import urljoin
-
 from rest_framework import serializers
 
 from closet_item.models import ItemListSerializer

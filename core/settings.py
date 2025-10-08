@@ -10,18 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 import os
-import socket
 from pathlib import Path
 from dotenv import load_dotenv
 
 load_dotenv("./.env")
-
-
-s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-s.connect(("8.8.8.8", 80))
-
-BASE_ADDRESS = s.getsockname()[0]
-s.close()
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -37,11 +29,7 @@ SECRET_KEY = 'django-insecure-af^^$dyl*n$5ab6=!nl=4_-fvcq_ls@bsikbgnm!dlg*u1lyq1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    BASE_ADDRESS
-]
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
