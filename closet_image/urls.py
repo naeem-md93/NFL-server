@@ -1,9 +1,11 @@
 from django.urls import path
-from rest_framework.routers import DefaultRouter
 
-from .views import ImageViewSet
+from . import views
+
 
 app_name = 'closet_image'
 
-router = DefaultRouter()
-router.register('', ImageViewSet, basename='images')
+
+urlpatterns = [
+    path('images/', views.ImageView.as_view()),
+]

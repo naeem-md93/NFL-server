@@ -19,15 +19,10 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-from closet_image.urls import router as closet_image_router
-from closet_item.urls import router as closet_item_router
-
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/closet/', include("closet_source.urls")),
-    path("api/closet/images/", include(closet_image_router.urls)),
-    path("api/closet/items/", include(closet_item_router.urls)),
+    path("api/closet/", include("closet_image.urls")),
 ]
 
 if settings.DEBUG:

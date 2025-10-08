@@ -3,9 +3,24 @@ import io
 from PIL import Image
 
 
-def byte_to_pillow(image_bytes):
-    img_copy = copy.deepcopy(image_bytes)
-    raw = img_copy.read()
+def byte_to_pillow(file_obj):
+    
+    try:
+        pos = file_obj.tell()
+    except (AttributeError, IOError):
+        pos = None
+        
+    raw = file_obj.read()
+    if pos is not None:
+        try:
+            file_obj.seek(pos)
+        except Exception:
+            # ignore if seek not supported
+            pass
+
     image = Image.open(io.BytesIO(raw))
-    return raw, image, image.width, image.height
+    # ensure image is loaded (some PIL lazy-load)
+    image.load()
+    
+    return image, image.width, image.height
 

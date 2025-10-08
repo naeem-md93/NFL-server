@@ -16,6 +16,14 @@ from dotenv import load_dotenv
 
 load_dotenv("./.env")
 
+
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.connect(("8.8.8.8", 80))
+
+BASE_ADDRESS = s.getsockname()[0]
+s.close()
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -29,14 +37,11 @@ SECRET_KEY = 'django-insecure-af^^$dyl*n$5ab6=!nl=4_-fvcq_ls@bsikbgnm!dlg*u1lyq1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-s.connect(("8.8.8.8", 80))
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
-    s.getsockname()[0]
+    BASE_ADDRESS
 ]
-s.close()
 
 # Application definition
 
@@ -50,7 +55,6 @@ INSTALLED_APPS = [
 
     'corsheaders',
     "rest_framework",
-    "closet_source",
     "closet_image",
     "closet_item"
 ]

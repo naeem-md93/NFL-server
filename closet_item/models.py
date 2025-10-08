@@ -14,19 +14,17 @@ class ItemModel(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     type = models.CharField(max_length=255, null=True, blank=True)
     caption = models.CharField(max_length=255, blank=True)
-    brx = models.FloatField(blank=False, null=False, default=0)
-    bry = models.FloatField(blank=False, null=False, default=0)
-    brw = models.FloatField(blank=False, null=False, default=0)
-    brh = models.FloatField(blank=False, null=False, default=0)
-    bax = models.PositiveIntegerField(blank=False, null=False, default=0)
-    bay = models.PositiveIntegerField(blank=False, null=False, default=0)
-    baw = models.PositiveIntegerField(blank=False, null=False, default=0)
-    bah = models.PositiveIntegerField(blank=False, null=False, default=0)
-    url = models.ImageField(upload_to=item_upload_path, null=True, blank=True)
-    image = models.ForeignKey(ImageModel, on_delete=models.CASCADE, related_name="items", related_query_name="image", null=True, blank=True)
-
+    width = models.PositiveIntegerField(default=0, blank=True, null=True)
+    height = models.PositiveIntegerField(default=0, blank=True, null=True)
+    box_x = models.FloatField(blank=False, null=False, default=0)
+    box_y = models.FloatField(blank=False, null=False, default=0)
+    box_w = models.FloatField(blank=False, null=False, default=0)
+    box_h = models.FloatField(blank=False, null=False, default=0)
+    url = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    image = models.ForeignKey(ImageModel, on_delete=models.CASCADE, related_name="items", related_query_name="image", null=True, blank=True)
 
     class Meta:
         db_table = "closet_items"
@@ -35,12 +33,11 @@ class ItemModel(models.Model):
         return f"({self.id}) | {self.caption}"
 
 
-class ItemSerializer(serializers.ModelSerializer):
+class ItemListSerializer(serializers.ModelSerializer):
     class Meta:
         model = ItemModel
         fields = (
-            "id", "type", "caption",
-            "brx", "bry", "brw", "brh",
-            "bax", "bay", "baw", "bah",
-            "url", "created_at"
+            "id", "type", "caption", "width", 'height',
+            "box_x", "box_y", "box_w", "box_h",
+            "url", "created_at", "updated_at"
         )

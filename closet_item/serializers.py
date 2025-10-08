@@ -1,56 +1,18 @@
-from django.db import transaction
 from rest_framework import serializers
 
-from closet_image.models import ImageModel, ImageSerializer
+from closet_image.models import ImageListSerializer
 
-from .models import ItemModel, ItemSerializer
+from .models import ItemModel
 
 
 class ItemDetailSerializer(serializers.ModelSerializer):
-    image = ImageSerializer(read_only=True)
+    image = ImageListSerializer(read_only=True)
 
     class Meta:
         model = ItemModel
         fields = (
-            "id", "type", "caption",
-            "brx", "bry", "brw", "brh",
-            "bax", "bay", "baw", "bah",
-            "url",
+            "id", "type", "caption", "width", "height",
+            "box_x", "box_y", "box_w", "box_h",
+            "url", "created_at", "updated_at"
             "image",
-            "created_at"
         )
-
-
-class ItemWriteSerializer(serializers.ModelSerializer):
-    image_id = serializers.PrimaryKeyRelatedField(
-        source="image",
-        queryset=ImageModel.objects.all(),
-        write_only=True
-    )
-
-    image = ImageSerializer(read_only=True)
-
-    class Meta:
-        model = ItemModel
-        fields = (
-            "id", "type", "caption",
-            "brx", "bry", "brw", "brh",
-            "bax", "bay", "baw", "bah",
-            "url",
-            "image_id", "image",
-            "created_at"
-        )
-        read_only_fields = ['id', 'created_at']
-
-
-    @transaction.atomic
-    def create(self, validated_data):
-        item = ItemModel.objects.create(**validated_data)
-        return item
-
-    @transaction.atomic
-    def update(self, instance, validated_data):
-        for attr, val in validated_data.items():
-            setattr(instance, attr, val)
-        instance.save()
-        return instance
