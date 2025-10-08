@@ -5,8 +5,8 @@ import sys
 from django.core.management.commands.runserver import Command as runserver
 
 
-runserver.default_port = os.getenv("DJANGO_PORT", "8000")
-runserver.default_addr = os.getenv("DJANGO_ADDRESS", "127.0.0.1")
+runserver.default_addr = os.getenv("SERVER_ADDR", "127.0.0.1")
+runserver.default_port = os.getenv("SERVER_PORT", "8000")
 
 
 def main():

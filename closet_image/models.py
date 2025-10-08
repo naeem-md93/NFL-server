@@ -11,7 +11,8 @@ class ImageModel(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     width = models.PositiveIntegerField(null=True, blank=True)
     height = models.PositiveIntegerField(null=True, blank=True)
-    url = models.CharField(max_length=255, null=True, blank=True)
+    path = models.ImageField(null=True, blank=True)
+    url = models.URLField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -23,6 +24,14 @@ class ImageModel(models.Model):
 
 
 class ImageListSerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField()
+
     class Meta:
         model = ImageModel
-        fields = ("id", "source", "name", "width", "height", "url", "created_at", "updated_at")
+        fields = ("id", "source", "name", "width", "height", "path", "url", "created_at", "updated_at")
+
+    def get_url(self, obj):
+        request = self.context.get("request")
+        if request is None:
+            return obj.url
+        return request.build_absolute_uri(obj.url)

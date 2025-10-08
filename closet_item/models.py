@@ -6,10 +6,6 @@ from rest_framework import serializers
 from closet_image.models import ImageModel
 
 
-def item_upload_path(instance, filename):
-    ext = filename.split('.')[-1]
-    return os.path.join('closet', "items", f"{instance.id}.{ext}")
-
 class ItemModel(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     type = models.CharField(max_length=255, null=True, blank=True)
@@ -20,7 +16,7 @@ class ItemModel(models.Model):
     box_y = models.FloatField(blank=False, null=False, default=0)
     box_w = models.FloatField(blank=False, null=False, default=0)
     box_h = models.FloatField(blank=False, null=False, default=0)
-    url = models.CharField(max_length=255, blank=True)
+    url = models.ImageField(upload_to="closet/items/", null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

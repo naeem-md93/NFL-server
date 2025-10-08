@@ -18,13 +18,15 @@ from .serializers import ImageDetailSerializer
 
 
 AI_URL= os.getenv("AI_URL")
+SERVER_URL = os.getenv("SERVER_URL")
 
 
-def post__extract_items(file, width, height):
+def post__extract_items(file, width, height, mime_type):
+
     resp = requests.post(
         f"{AI_URL}/api/ai/extract-items/",
         files={"file": file},
-        data={"width": width, "height": height}
+        data={"width": width, "height": height, "mime_type": mime_type},
     )
 
     return resp.json()
@@ -40,34 +42,28 @@ def post__process_one_file(file):
     _id = uuid.uuid4().hex
     ext = os.path.splitext(file_name)[1]
     save_name = f"{_id}{ext}"
-    saved_name = default_storage.save(
-        f"./closet/images/{save_name}",
-        file
-    )
-    url = default_storage.url(save_name)
-    print(f'{saved_name=}')
-    print(f"{url=}")
-    
-    
+    saved_name = default_storage.save(f"./closet/images/{save_name}", file)
+    url = os.path.join(settings.MEDIA_URL, saved_name)
+
     image = ImageModel.objects.create(**{
         "id": _id,
         "source": SOURCE,
         "name": file_name,
-        "url": image_url,
+        "path": saved_name,
+        "url": url,
         "width": width,
         "height": height,
     })    
     image.save()
     
-    items = post__extract_items(file, width, height)
+    items = post__extract_items(file, width, height, mime_type)
     for it in items:
         it["image"] = image
         it["width"] = width
         it["height"] = height
-        it['source'] = SOURCE
         it = ItemModel(**it)
-        it.save()    
-    
+        it.save()
+
     return image
 
 
@@ -76,20 +72,19 @@ class ImageView(APIView):
         _id = request.GET.dict().pop('id', None)
         if _id is None:
             sources = ImageModel.objects.all()
-            serializer = ImageListSerializer(sources, many=True)
+            serializer = ImageListSerializer(sources, many=True, context={"request": request})
         else:
             sources = ImageModel.objects.get(id=_id)
-            serializer = ImageDetailSerializer(sources)
+            serializer = ImageDetailSerializer(sources, context={"request": request})
         return Response(serializer.data)
 
     def post(self, request):
         
-        i_serializer = ImageDetailSerializer(data=request.data)
+        i_serializer = ImageDetailSerializer(data=request.data, context={"request": request})
         if i_serializer.is_valid():
             file = i_serializer.validated_data.pop("file")
-            print(vars(file))
             image = post__process_one_file(file)
-            f_serializer = ImageDetailSerializer(image)
+            f_serializer = ImageDetailSerializer(image, context={"request": request})
                 
             return Response(f_serializer.data, status=status.HTTP_201_CREATED)
         return Response(i_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
