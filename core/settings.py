@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'corsheaders',
     "rest_framework",
     "closet_image",
-    "closet_item"
+    "closet_item",
+    "recommendation"
 ]
 
 MIDDLEWARE = [

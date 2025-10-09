@@ -28,5 +28,4 @@ class ItemView(APIView):
         else:
             sources = ItemModel.objects.get(id=_id)
             serializer = ItemDetailSerializer(sources, context={"request": request})
-        print(serializer.data)
         return Response(serializer.data)
