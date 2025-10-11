@@ -1,17 +1,10 @@
 #!/usr/bin/env python
 """Django's command-line utility for administrative tasks."""
 import os
+import sys
 from dotenv import load_dotenv
 
-load_dotenv("/home/naeem-md93/Shared/.env")
-load_dotenv("/run/user/1000/gvfs/smb-share:server=an515-55.local,share=shared/.env")
-
-import sys
-from django.core.management.commands.runserver import Command as runserver
-
-
-runserver.default_addr = os.getenv("SERVER_ADDR", "127.0.0.1")
-runserver.default_port = os.getenv("SERVER_PORT", "8000")
+load_dotenv(".env")
 
 
 def main():

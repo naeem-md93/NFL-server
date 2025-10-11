@@ -16,7 +16,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
@@ -132,20 +131,14 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+
+# Configure the allowed origins
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
+    "http://localhost:5173",  # Your frontend's origin
     "http://127.0.0.1:5173",
-    "http://localhost:8000",
-    "http://127.0.0.1:8000",
+    "https://nfl-client-dev.up.railway.app"
+    # Add your production domain when you deploy!
 ]
 
-# Optional: DRF defaults
-# REST_FRAMEWORK = {
-#     'DEFAULT_PERMISSION_CLASSES': [
-#         'rest_framework.permissions.AllowAny',  # change to IsAuthenticated in production
-#     ]
-# }
-# Allow localhost during development
-# CORS_ALLOW_ALL_ORIGINS = True  # or set CORS_ALLOWED_ORIGINS to your frontend origin
-# CORS_ALLOW_CREDENTIALS = True
-APPEND_SLASH=True
+# OR, for development simplicity (less secure, but quick for localhost)
+CORS_ALLOW_ALL_ORIGINS = True
