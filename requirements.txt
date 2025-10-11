@@ -4,3 +4,4 @@ python-dotenv
 pillow
 requests
 django-cors-headers
+gunicorn

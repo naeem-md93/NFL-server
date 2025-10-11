@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     "rest_framework",
     "closet_image",
     "closet_item",
-    "recommendation"
+    "recommendation",
+    "tryon"
 ]
 
 MIDDLEWARE = [

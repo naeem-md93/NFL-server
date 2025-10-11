@@ -36,16 +36,17 @@ def post__process_items(path, image_obj, items):
         
         _id = uuid.uuid4().hex
         save_path = os.path.join(f"closet/items/{_id}.png")
-        
+        os.makedirs("./media/closet/items/", exist_ok=True)
+
         cropped_img.save(os.path.join(settings.MEDIA_ROOT, save_path), "png")
         
+        it["source"] = "MyCloset"
         it["image"] = image_obj
         it["width"] = width
         it["height"] = height
         it["path"] = save_path
         it['url'] = os.path.join("/media/", save_path)
-        it["source"] = "MyCloset"
-        it = ItemModel(**it)
+        it = ItemModel.objects.create(**it)
         it.save()
 
 
@@ -71,6 +72,7 @@ def post__process_one_file(file):
     _id = uuid.uuid4().hex
     ext = os.path.splitext(file_name)[1]
     save_name = f"{_id}{ext}"
+    os.makedirs("./media/closet/images/", exist_ok=True)
     saved_name = default_storage.save(f"./closet/images/{save_name}", file)
     url = os.path.join(settings.MEDIA_URL, saved_name)
 
@@ -86,6 +88,7 @@ def post__process_one_file(file):
     image.save()
     
     items = post__extract_items(saved_name)
+    print(f"MMMMMDDDD {items}")
     
     post__process_items(saved_name, image, items)
     
@@ -94,66 +97,45 @@ def post__process_one_file(file):
 
 class ImageView(APIView):
     def get(self, request):
-        _id = request.GET.dict().pop('id', None)
-        if _id is None:
-            sources = ImageModel.objects.all()
-            serializer = ImageListSerializer(sources, many=True, context={"request": request})
-        else:
-            sources = ImageModel.objects.get(id=_id)
-            serializer = ImageDetailSerializer(sources, context={"request": request})
-        return Response(serializer.data)
+        print(f'ImageView get: {request.GET.dict()}')
+        try:
+            _id = request.GET.dict().pop('id', None)
+            if _id is None:
+                sources = ImageModel.objects.all()
+                serializer = ImageListSerializer(sources, many=True, context={"request": request})
+            else:
+                sources = ImageModel.objects.get(id=_id)
+                serializer = ImageDetailSerializer(sources, context={"request": request})
+            return Response(serializer.data)
+        except Exception as e:
+            print(repr(e))
+            return Response([repr(e)], status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def post(self, request):
-        
-        i_serializer = ImageDetailSerializer(data=request.data, context={"request": request})
-        if i_serializer.is_valid():
-            file = i_serializer.validated_data.pop("file")
-            image = post__process_one_file(file)
-            f_serializer = ImageDetailSerializer(image, context={"request": request})
-                
-            return Response(f_serializer.data, status=status.HTTP_201_CREATED)
-        return Response(i_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    # def put(self, request):
-    #     _id = request.data.pop('id')
-
-    #     i_serializer = ImageDetailSerializer(data=request.data)
-    #     if i_serializer.is_valid():
-    #         validated_data = i_serializer.validated_data
-            
-    #         source = validated_data.pop("source", None)
-    #         if source is not None:
-    #             source = SourceModel.objects.get(name=source)
-            
-    #         items = validated_data.pop("items", None)
-    #         if items is not None:
-    #             validated_data["items"] = items
-    #         source = ImageModel.objects.get(id=_id)
-    #         for key, value in i_serializer.validated_data.items():
-    #             setattr(source, key, value)
-    #         source.save()
-    #         f_serializer = ImageDetailSerializer(source)
-    #         return Response(f_serializer.data, status=status.HTTP_200_OK)
-    #     return Response(i_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    # def patch(self, request):
-    #     _id = request.data.pop('id')
-
-    #     i_serializer = ImageDetailSerializer(data=request.data)
-    #     if i_serializer.is_valid():
-    #         source = ImageModel.objects.get(id=_id)
-    #         for key, value in i_serializer.validated_data.items():
-    #             setattr(source, key, value)
-    #         source.save()
-    #         f_serializer = ImageDetailSerializer(source)
-    #         return Response(f_serializer.data, status=status.HTTP_200_OK)
-    #     return Response(i_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        print(f'ImageView post: {request.data}')
+        print(f"file:", request.FILES)
+        try:
+            i_serializer = ImageDetailSerializer(data=request.data, context={"request": request})
+            if i_serializer.is_valid():
+                file = i_serializer.validated_data.pop("file")
+                image = post__process_one_file(file)
+                f_serializer = ImageDetailSerializer(image, context={"request": request})
+                    
+                return Response(f_serializer.data, status=status.HTTP_201_CREATED)
+            return Response(i_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            print(repr(e))
+            return Response([repr(e)], status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def delete(self, request):
+        print(f'ImageView delete: {request.data}')
+        try:
+            _id = request.data.pop('id')
 
-        _id = request.data.pop('id')
+            source = ImageModel.objects.get(id=_id)
+            source.delete()
 
-        source = ImageModel.objects.get(id=_id)
-        source.delete()
-
-        return Response(data={"Deleted Successfully"}, status=status.HTTP_200_OK)
+            return Response(data={"Deleted Successfully"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(repr(e))
+            return Response([repr(e)], status=status.HTTP_500_INTERNAL_SERVER_ERROR)

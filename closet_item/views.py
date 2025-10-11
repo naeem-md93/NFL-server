@@ -21,11 +21,15 @@ SERVER_URL = os.getenv("SERVER_URL")
 
 class ItemView(APIView):
     def get(self, request):
-        _id = request.GET.dict().pop('id', None)
-        if _id is None:
-            sources = ItemModel.objects.all()
-            serializer = ItemListSerializer(sources, many=True, context={"request": request})
-        else:
-            sources = ItemModel.objects.get(id=_id)
-            serializer = ItemDetailSerializer(sources, context={"request": request})
-        return Response(serializer.data)
+        try:
+            
+            _id = request.GET.dict().pop('id', None)
+            if _id is None:
+                sources = ItemModel.objects.all()
+                serializer = ItemListSerializer(sources, many=True, context={"request": request})
+            else:
+                sources = ItemModel.objects.get(id=_id)
+                serializer = ItemDetailSerializer(sources, context={"request": request})
+            return Response(serializer.data)
+        except Exception as e:
+            return Response([repr(e)], status=status.HTTP_500_INTERNAL_SERVER_ERROR)

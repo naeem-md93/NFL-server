@@ -24,7 +24,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("api/closet/", include("closet_image.urls")),
     path("api/closet/", include("closet_item.urls")),
-    path("api/", include("recommendation.urls"))
+    path("api/", include("recommendation.urls")),
+    path("api/", include("tryon.urls")),
 
 ]
 
