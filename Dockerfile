@@ -11,8 +11,8 @@ RUN apt-get update && apt-get install -y python3-dev python3-venv
 # Set the working directory
 WORKDIR /app
 
-COPY requirements.txt /app
-COPY . /app
+COPY requirements.txt ./
+COPY . ./
 
 # Install Python dependencies
 RUN python3 -m venv .venv
