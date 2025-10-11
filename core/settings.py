@@ -136,7 +136,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Your frontend's origin
     "http://127.0.0.1:5173",
-    "https://nfl-client-dev.up.railway.app"
+    "https://nfl-client-dev.up.railway.app",
+    "https://nfl-server.railway.internal"
     # Add your production domain when you deploy!
 ]
 
