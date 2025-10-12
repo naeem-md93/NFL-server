@@ -1,7 +1,7 @@
 import os
 from rest_framework import serializers
 
-from closet_item.models import ItemListSerializer
+from closet.serializers import ItemListSerializer
 
 from .models import RecommendationModel
 

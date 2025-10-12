@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class ClosetImageConfig(AppConfig):
+class ClosetConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'closet_image'
+    name = 'closet'

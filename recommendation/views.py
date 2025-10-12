@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status, serializers
 
 
-from closet_item.models import ItemModel
+from closet.models import ItemModel
 
 from .models import RecommendationModel
 from .serializers import RecommendationDetailSerializer

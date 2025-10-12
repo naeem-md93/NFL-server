@@ -3,7 +3,7 @@ import uuid
 from django.db import models
 from rest_framework import serializers
 
-from closet_item.models import ItemModel
+from closet.models import ItemModel
 
 
 class RecommendationModel(models.Model):
