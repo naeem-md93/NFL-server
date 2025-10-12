@@ -1,8 +1,7 @@
 import os
+import uuid
 import json
 import base64
-import uuid
-
 import requests
 from PIL import Image
 from io import BytesIO
