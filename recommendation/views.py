@@ -20,16 +20,16 @@ class RecommendationView(APIView):
         occasions = valid_data.pop("occasions")
         item_ids = valid_data.pop("items")
 
-        # resp = V.get_recommendations(query, occasions, item_ids)
+        resp = V.get_recommendations(query, occasions, item_ids)
 
-        # result = []
-        # for r in resp:
-        #     recom = M.RecommendationModel.objects.get(id=r)
-        #     f_serializer = I.RecommendationDetailSerializer(recom, many=False)
-        #     result.append(f_serializer.data)
+        result = []
+        for r in resp:
+            recom = M.RecommendationModel.objects.get(id=r)
+            f_serializer = I.RecommendationDetailSerializer(recom, many=False)
+            result.append(f_serializer.data)
 
-        result = M.RecommendationModel.objects.all()
-        f_serializer = I.RecommendationDetailSerializer(result, many=True, context={'request': request})
-        result = f_serializer.data
+        # result = M.RecommendationModel.objects.all()
+        # f_serializer = I.RecommendationDetailSerializer(result, many=True, context={'request': request})
+        # result = f_serializer.data
 
         return Response(result, status=status.HTTP_200_OK)
