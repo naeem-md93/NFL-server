@@ -25,7 +25,7 @@ class RecommendationView(APIView):
         result = []
         for r in resp:
             recom = M.RecommendationModel.objects.get(id=r)
-            f_serializer = I.RecommendationDetailSerializer(recom, many=False)
+            f_serializer = I.RecommendationDetailSerializer(recom, many=False, context={'request': request})
             result.append(f_serializer.data)
 
         # result = M.RecommendationModel.objects.all()
