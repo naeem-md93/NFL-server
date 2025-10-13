@@ -11,15 +11,13 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 
 
-from recommendation.models import RecommendationModel
-from recommendation.serializers import RecommendationDetailSerializer
+# from recommendation.models import RecommendationModel
+# from recommendation.serializers import RecommendationDetailSerializer
+#
+# from .models import TryOnModel
+# from .serializers import TryOnDetailSerializer
 
-from .models import TryOnModel
-from .serializers import TryOnDetailSerializer
 
-
-AI_URL = os.getenv("AI_URL")
-TRYON_URL=f"{AI_URL}/api/ai/tryon/"
 
 
 def post__get_tryon(photo_obj, outfit_id, mime_type):
@@ -75,6 +73,7 @@ def post__process_one_file(file, outfit_id):
 
 class TryOnView(APIView):
     def post(self, request):
+        # i_serializer =
         try:
             photo = request.data.pop("photo")[0]
             outfit_id = request.data.pop("outfit_id")[0]

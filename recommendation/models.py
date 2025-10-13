@@ -1,7 +1,6 @@
 import os
 import uuid
 from django.db import models
-from rest_framework import serializers
 
 from closet.models import ItemModel
 
@@ -20,9 +19,3 @@ class RecommendationModel(models.Model):
 
     def __str__(self):
         return f"({self.id}) | {self.description}"
-
-
-class RecommendationListSerializer(serializers.Serializer):
-    class Meta:
-        model = RecommendationModel
-        fields = ("id", "compatibility", "description", "created_at", "updated_at")
